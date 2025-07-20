@@ -4,8 +4,8 @@ import com.example.sports.po.OrderDetail;
 import com.example.sports.po.Orders;
 import com.example.sports.repository.OrderDetailRepository;
 import com.example.sports.repository.OrderRepository;
-import com.example.sports.repository.ProductRepository;
-import com.example.sports.service.ProductService;
+import com.example.sports.repository.ActivityRepository;
+import com.example.sports.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,9 +20,9 @@ public class OrderSchedule {
     private OrderRepository ordersRepository;
 
     @Autowired
-    private ProductService productService;
+    private ActivityService activityService;
     @Autowired
-    private ProductRepository productRepository;
+    private ActivityRepository activityRepository;
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;
@@ -44,7 +44,7 @@ public class OrderSchedule {
             // 释放库存
             List<OrderDetail> orderTailList = orderDetailRepository.findByOrder(order);
             for (OrderDetail orderTail: orderTailList) {
-                productRepository.releaseStock(orderTail.getProduct().getId(), orderTail.getCarts().getQuantity());
+                activityRepository.releaseStock(orderTail.getProduct().getId(), orderTail.getCarts().getQuantity());
             }
 
             // 更新订单状态

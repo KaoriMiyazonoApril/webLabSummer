@@ -1,6 +1,6 @@
 package com.example.sports.repository;
 
-import com.example.sports.po.Product;
+import com.example.sports.po.Activity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,10 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 
-public interface ProductRepository extends JpaRepository<Product,Integer> {
-    List<Product> findByCategory(String category);
+public interface ActivityRepository extends JpaRepository<Activity,Integer> {
 
-    List<Product> findByTitleContainingOrDescriptionContainingOrCoverContainingOrDetailContaining(String title, String description, String cover, String detail);
+    public List<Activity> findByNameContainingOrDetailContaining(String name, String detail);
 
     @Modifying
     @Query("UPDATE ProductAmount pa SET pa.amount = pa.amount - :quantity, pa.frozen = pa.frozen + :quantity " +

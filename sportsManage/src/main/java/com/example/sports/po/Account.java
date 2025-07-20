@@ -25,8 +25,8 @@ public class Account {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "phone")
-    private Long phone;
+    @Column(name = "telephone")
+    private Long telephone;
 
     @Column(name = "avatar")
     private String avatar;
@@ -39,7 +39,7 @@ public class Account {
         accountVO.setId(this.id);
         accountVO.setUsername(this.username);
         accountVO.setPassword(this.password);
-        accountVO.setPhone(this.phone);
+        accountVO.setTelephone(this.telephone);
         accountVO.setAvatar(this.avatar);
         accountVO.setRole(this.role);  // 新增
         return accountVO;

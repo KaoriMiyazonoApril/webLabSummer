@@ -1,18 +1,19 @@
 package com.example.sports.po;
-import com.example.sports.vo.CommentVO;
+
+import com.example.sports.vo.AttendanceVO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
-@Table(name = "comment")
+@Table(name = "attendance")
 @Getter
 @Setter
 @NoArgsConstructor
 
-public class Comment {
-
+public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "attendance_id")
@@ -26,18 +27,16 @@ public class Comment {
     @JoinColumn(name = "activity_id", referencedColumnName = "id")
     private Activity activity;
 
-    @Column(name = "score")
-    private Integer score;
 
-    @Column(name = "detail")
-    private String detail;
+    @Column(name="order_date")
+    private Date orderDate;
 
-    public CommentVO toVO(){
-        CommentVO vo = new CommentVO();
-        vo.setAccount(this.account.toVO());
-        vo.setActivity(this.activity.toVO());
-        vo.setScore(score);
-        vo.setDetail(detail);
-        return vo;
+    public AttendanceVO toVO(){
+        AttendanceVO attendanceVO = new AttendanceVO();
+        attendanceVO.setId(this.id);
+        attendanceVO.setAccount(this.account.toVO());
+        attendanceVO.setActivity(this.activity.toVO());
+        attendanceVO.setOrderDate(orderDate);
+        return attendanceVO;
     }
 }

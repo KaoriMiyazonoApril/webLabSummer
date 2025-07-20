@@ -12,14 +12,14 @@ public class AccountVO {
     private Integer id;
     private String username;
     private String password;
-    private Long phone;
+    private Long telephone;
     private String role;
     private String avatar;
 
     public Account toPO() {
         Account account = new Account();
         account.setId(this.id);
-        account.setPhone(this.phone);
+        account.setTelephone(this.telephone);
         account.setAvatar(this.avatar);
         account.setPassword(this.password);
         account.setUsername(this.username);

@@ -1,0 +1,106 @@
+package com.example.sports.service;
+
+import com.example.sports.exception.SportsException;
+import com.example.sports.po.Account;
+import com.example.sports.po.Comment;
+import com.example.sports.repository.CommentRepository;
+import com.example.sports.util.SecurityUtil;
+import com.example.sports.vo.CommentVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+//()
+
+@Service
+public class CommentService {
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private SecurityUtil securityUtil;
+
+    public CommentVO addComment(CommentVO comment) {
+        Account currentUser = securityUtil.getCurrentUser();
+        if(currentUser == null){
+            throw SportsException.notLogin();
+        }
+        if (comment.getActivity().getId() == null|| (comment.getScore() == null && comment.getDetail() == null)) {
+            throw SportsException.NoEnoughArguments();
+        }
+
+        comment.setAccount(currentUser.toVO());
+        Comment ret=comment.toPO();
+        Comment a = commentRepository.findByAccount_IdAndActivity_Id(comment.getAccount().getId(), comment.getActivity().getId());
+        if (a == null)
+            commentRepository.save(ret);
+        else{
+            commentRepository.delete(a);
+            commentRepository.save(ret);
+        }
+        return ret.toVO();
+    }
+
+    public boolean deleteComment(CommentVO comment){
+        Account currentUser = securityUtil.getCurrentUser();
+        if(currentUser == null){
+            throw SportsException.notLogin();
+        }
+        if(Objects.equals(currentUser.getRole(), "Admin") || Objects.equals(currentUser.getId(), comment.getActivity().getId())){
+            if(comment.getActivity().getId() == null || comment.getAccount().getId() == null){
+                throw SportsException.NoEnoughArguments();
+            }
+            Comment a=commentRepository.findByAccount_IdAndActivity_Id(comment.getAccount().getId(), comment.getActivity().getId());
+            if(a == null){
+                throw SportsException.CommentNotFound();
+            }
+            commentRepository.delete(a);
+            return true;
+        }
+        else{
+            throw SportsException.NoAccession();
+        }
+
+    }
+
+    public List<CommentVO> getCommentsByActivityId(CommentVO comment){
+        if(comment.getActivity().getId() == null){
+            throw SportsException.NoEnoughArguments();
+        }
+
+        List<Comment> comments=commentRepository.findByActivity_Id(comment.getActivity().getId());
+        List<CommentVO> ret=comments.stream().map(Comment::toVO).collect(Collectors.toList());
+
+        if(comment.getAccount().getId()!=null){
+            for(int i=0;i<ret.size();i++){
+                if(ret.get(i).getAccount().getId().equals(securityUtil.getCurrentUser().getId())){
+                    CommentVO target = ret.remove(i);
+                    ret.add(0, target);
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+
+    public Double getAvgScore(CommentVO comment){
+        if(comment.getActivity().getId() == null){
+            throw SportsException.NoEnoughArguments();
+        }
+
+        List<Comment> comments=commentRepository.findByActivity_Id(comment.getActivity().getId());
+        double sum=0;
+        double num=0;
+        for(int i=0;i<comments.size();i++){
+            if(comments.get(i).getScore()!=0){
+                num++;
+                sum+=comments.get(i).getScore();
+            }
+        }
+        if(num==0){
+            return 0.0;
+        }
+        return Math.round((sum / num) * 10.0) / 10.0;
+    }
+}

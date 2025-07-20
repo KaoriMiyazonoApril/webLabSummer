@@ -9,15 +9,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CommentVO {
-    private Integer userId;
-    private Integer activityId;
+    private Integer id;
+    private ActivityVO activity;
+    private AccountVO account;
     private String detail;
     private Integer score;
 
     public Comment toPO(){
         Comment comment = new Comment();
-        comment.setUserId(userId);
-        comment.setActivityId(activityId);
+        comment.setId(this.id);
+        comment.setActivity(this.activity.toPO());
+        comment.setAccount(this.account.toPO());
         comment.setDetail(detail);
         comment.setScore(score);
         return comment;

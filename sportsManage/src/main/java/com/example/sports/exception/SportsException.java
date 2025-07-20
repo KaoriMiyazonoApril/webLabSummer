@@ -70,4 +70,6 @@ public class SportsException extends RuntimeException {
     public static SportsException FavorNotFound(){return new SportsException("你的收藏不存在");};
 
     public static SportsException CommentNotFound(){return new SportsException("你的评论不存在");}
+
+    public static SportsException NoAccession(){return new SportsException("无上述权限");}
 }

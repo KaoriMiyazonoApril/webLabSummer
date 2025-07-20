@@ -36,7 +36,7 @@ public class Activity {
     private Integer cost;
 
     @Column(name="limit")
-    private Integer limit;
+    private Integer limit;//剩下的名额
 
     public ActivityVO toVO(){
         ActivityVO vo = new ActivityVO();
