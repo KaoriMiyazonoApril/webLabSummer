@@ -12,6 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
 
 public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,13 +21,12 @@ public class Attendance {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
     @ManyToOne
     @JoinColumn(name = "activity_id", referencedColumnName = "id")
     private Activity activity;
-
 
     @Column(name="order_date")
     private Date orderDate;

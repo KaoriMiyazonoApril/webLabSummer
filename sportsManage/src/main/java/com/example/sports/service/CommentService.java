@@ -64,32 +64,23 @@ public class CommentService {
 
     }
 
-    public List<CommentVO> getCommentsByActivityId(CommentVO comment){
-        if(comment.getActivity().getId() == null){
-            throw SportsException.NoEnoughArguments();
-        }
+    public List<CommentVO> getCommentsByActivityId(Integer activityId){
 
-        List<Comment> comments=commentRepository.findByActivity_Id(comment.getActivity().getId());
+        List<Comment> comments=commentRepository.findByActivity_Id(activityId);
         List<CommentVO> ret=comments.stream().map(Comment::toVO).collect(Collectors.toList());
 
-        if(comment.getAccount().getId()!=null){
-            for(int i=0;i<ret.size();i++){
-                if(ret.get(i).getAccount().getId().equals(securityUtil.getCurrentUser().getId())){
-                    CommentVO target = ret.remove(i);
-                    ret.add(0, target);
-                    break;
-                }
+        for(int i=0;i<ret.size();i++){
+            if(ret.get(i).getAccount().getId().equals(securityUtil.getCurrentUser().getId())){
+                CommentVO target = ret.remove(i);
+                ret.add(0, target);
+                break;
             }
         }
         return ret;
     }
 
-    public Double getAvgScore(CommentVO comment){
-        if(comment.getActivity().getId() == null){
-            throw SportsException.NoEnoughArguments();
-        }
-
-        List<Comment> comments=commentRepository.findByActivity_Id(comment.getActivity().getId());
+    public Double getAvgScore(Integer activityId){
+        List<Comment> comments=commentRepository.findByActivity_Id(activityId);
         double sum=0;
         double num=0;
         for(int i=0;i<comments.size();i++){

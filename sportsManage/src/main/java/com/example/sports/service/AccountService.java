@@ -2,9 +2,7 @@ package com.example.sports.service;
 
 import com.example.sports.exception.SportsException;
 import com.example.sports.po.Account;
-import com.example.sports.po.Carts;
 import com.example.sports.repository.AccountRepository;
-import com.example.sports.repository.CartsRepository;
 import com.example.sports.util.SecurityUtil;
 import com.example.sports.util.TokenUtil;
 import com.example.sports.vo.AccountVO;
@@ -16,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 //()
 @Service
 public class AccountService {
@@ -30,8 +30,6 @@ public class AccountService {
 
     private PasswordEncoder passwordEncoder;
 
-    private CartsRepository cartsRepository;
-
     private Boolean ensureUser(Integer userid){
         Account currentUser = securityUtil.getCurrentUser();
         if (currentUser == null) {
@@ -44,7 +42,6 @@ public class AccountService {
     }
 
     public String register(AccountVO accountVO) {
-
         if(accountVO.getUsername()== null ||accountVO.getPassword()==null ||accountVO.getTelephone()==null){
             throw SportsException.NoEnoughArguments();
         }
@@ -68,7 +65,10 @@ public class AccountService {
         return new AccountVO();
     }
 
-    public String login(Long telephone, String pwd) {
+    public String login(AccountVO a) {
+
+        Long telephone=a.getTelephone();
+        String pwd=a.getPassword();
         if(telephone==null || pwd==null)
             throw SportsException.NoEnoughArguments();
         Account ac = accountRepository.findByTelephone(telephone);
@@ -76,31 +76,30 @@ public class AccountService {
             throw SportsException.WrongUsername();
         }
 
-        // 使用matches方法验证密码
         if (!passwordEncoder.matches(pwd, ac.getPassword())) {
             throw SportsException.WrongPassword();
         }
-
         return tk.getToken(ac);
     }
 
-    public Boolean update(Integer userId,String username, String password, String avatar) {
+    public Boolean update(AccountVO a) {
+        Integer userId=a.getId();
+        String username=a.getUsername();
+        String password=a.getPassword();
+        String avatar=a.getAvatar();
+
         if(ensureUser(userId)){
             Account ac = accountRepository.findById(userId).get();
-
             if (avatar != null) {
                 ac.setAvatar(avatar);
             }
-
             if (password != null) {
                 // 加密新密码
                 ac.setPassword(passwordEncoder.encode(password));
             }
-
             if (username != null) {
                 ac.setUsername(username);
             }
-
             accountRepository.save(ac);
             return true;
         }
@@ -111,10 +110,6 @@ public class AccountService {
         if(ensureUser(id)){
             Account a=accountRepository.findById(id).get();
             accountRepository.delete(a);
-            List<Carts> carts=cartsRepository.findByAccount(a);
-            for(Carts c:carts){
-                cartsRepository.delete(c);
-            }
             return true;
         }
         return false;
@@ -126,6 +121,14 @@ public class AccountService {
             Account a=accountRepository.findById(id).get();
             a.setRole("Admin");
             return true;
+        }
+        throw SportsException.NoAccession();
+    }
+
+    public List<AccountVO> getAllUser(){
+        Account ac = securityUtil.getCurrentUser();
+        if(ac.getRole().equals("Admin")){
+            return accountRepository.findAll().stream().map(Account::toVO).collect(Collectors.toList());
         }
         throw SportsException.NoAccession();
     }

@@ -15,30 +15,16 @@ public interface ActivityRepository extends JpaRepository<Activity,Integer> {
     public List<Activity> findByNameContainingOrDetailContaining(String name, String detail);
 
     @Modifying
-    @Query("UPDATE ProductAmount pa SET pa.amount = pa.amount - :quantity, pa.frozen = pa.frozen + :quantity " +
-            "WHERE pa.productId = :productId AND pa.amount >= :quantity")
+    @Query("UPDATE Activity ac SET ac.limit=ac.limit - 1" +
+            "WHERE ac.id = :activityId AND ac.limit>=1")
     @Transactional
-    void lockStock(@Param("productId") Integer productId,
-                  @Param("quantity") Integer quantity);
+    int lockStock(@Param("activityId") Integer activityId);
 
     @Modifying
-    @Query("UPDATE ProductAmount pa SET pa.amount = pa.amount + :quantity, pa.frozen = pa.frozen - :quantity " +
-            "WHERE pa.productId = :productId AND pa.frozen >= :quantity")
+    @Query("UPDATE Activity ac SET ac.limit = ac.limit + 1" +
+            "WHERE ac.id=:activityId")
     @Transactional
-    void releaseStock(@Param("productId") Integer productId,
-                   @Param("quantity") Integer quantity);
+    void releaseStock(@Param("activityId") Integer activityId);
 
-    @Modifying
-    @Query("UPDATE ProductAmount pa SET pa.frozen = pa.frozen - :quantity " +
-            "WHERE pa.productId = :productId AND pa.frozen >= :quantity")
-    @Transactional
-    void reduceStock(@Param("productId") Integer productId,
-                      @Param("quantity") Integer quantity);
 
-    @Modifying
-    @Query("UPDATE Product pa SET pa.sales = pa.sales + :quantity " +
-            "WHERE pa.id = :productId ")
-    @Transactional
-    void addSales(@Param("productId") Integer productId,
-                     @Param("quantity") Integer quantity);
 }

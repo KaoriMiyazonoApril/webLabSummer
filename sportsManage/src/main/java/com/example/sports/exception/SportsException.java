@@ -15,16 +15,8 @@ public class SportsException extends RuntimeException {
         return new SportsException("输入格式不符合要求，请检查后重试");
     }
 
-    public static SportsException DuplicateName(){
-        return new SportsException("用户名已被使用，请尝试其他用户名");
-    }
-
-    public static SportsException ProductNotFound(){
-        return new SportsException("未找到对应商品，请检查商品ID");
-    }
-
-    public static SportsException DuplicateProduct(){
-        return new SportsException("已存在同名商品，请修改商品名称");
+    public static SportsException ActivityNotFound(){
+        return new SportsException("未找到对应活动");
     }
 
     public static SportsException NoEnoughArguments(){
@@ -41,35 +33,21 @@ public class SportsException extends RuntimeException {
 
     public static SportsException ossError(){return new SportsException("oss服务出现异常");}
 
-    public static SportsException notEnoughStock(){return new SportsException("库存不足");}
-
     public static SportsException invalidUserId(){return new SportsException("用户ID不合法");}
 
-    public static SportsException productSoldOut(){return new SportsException("商品已售罄");}
-
-    public static SportsException cartItemNotFound(){return new SportsException("购物车中未找到对应的商品项");}
-
-    public static SportsException getItemListFailed(){return new SportsException("获取购物车商品项列表失败");}
-
-    public static SportsException OrderNotFound() {return new SportsException("订单不存在");}
-
-    public static SportsException OrderStatusError() {return new SportsException("只能取消待处理的订单");}
-
-    public static SportsException OrderPayStatusError() {return new SportsException("只能支付待处理的订单");}
-
-    public static SportsException InvaildProductAmount(){return new SportsException("商品数量不合法");}
+    public static SportsException activityFull(){return new SportsException("活动人数已满,请在有空余名额时重试");}
 
     public static SportsException fileUploadFail() {
         return new SportsException("文件上传失败!");
     }
 
-    public static SportsException AdNotFound(){return new SportsException("广告id不存在");}
-
-    public static SportsException DuplicateFavor(){return new SportsException("已经收藏该商品");}
-
-    public static SportsException FavorNotFound(){return new SportsException("你的收藏不存在");};
-
     public static SportsException CommentNotFound(){return new SportsException("你的评论不存在");}
 
-    public static SportsException NoAccession(){return new SportsException("无上述权限");}
+    public static SportsException NoAccession(){return new SportsException("无权限");}
+
+    public static SportsException ActivityAlreadyUnaccessible(){return new SportsException("活动已经过期");}
+
+    public static SportsException ActivityAlreadyJoined(){return new SportsException("已经报名了此次活动");}
+
+    public static SportsException ActivityNotJoined(){return new SportsException("没有报名此次活动");}
 }
