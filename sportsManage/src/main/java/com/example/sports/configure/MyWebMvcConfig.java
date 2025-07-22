@@ -14,18 +14,11 @@ public class MyWebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/api/accounts")
-                .excludePathPatterns("/api/accounts/login")
+                .excludePathPatterns("/api/account/**")
+                .excludePathPatterns("/api/activity/**")
+                .excludePathPatterns("/api/comment/**")
+                .excludePathPatterns("/api/attendance/**")
                 .excludePathPatterns("/images")
-                .excludePathPatterns("/api/products")
-                .excludePathPatterns("/api/products/*")
-                .excludePathPatterns("/api/products/**")
-                .excludePathPatterns("/api/orders/returnUrl")
-                .excludePathPatterns("/api/orders/notify")
-                .excludePathPatterns("/favicon.ico")
-                .excludePathPatterns("/api/comments/")
-                .excludePathPatterns("/api/comments/*")
-                .excludePathPatterns("/api/comments/**")
                 .order(1);
     }
 }

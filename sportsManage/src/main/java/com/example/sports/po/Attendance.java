@@ -17,7 +17,7 @@ import java.util.Date;
 public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "attendance_id")
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne

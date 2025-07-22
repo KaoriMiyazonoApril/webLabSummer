@@ -10,12 +10,12 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-
+@Entity
 public class Comment {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "attendance_id")
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne

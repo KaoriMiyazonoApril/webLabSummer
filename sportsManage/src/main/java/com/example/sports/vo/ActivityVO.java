@@ -18,7 +18,7 @@ public class ActivityVO {
     private Date date;
     private String detail;
     private Integer cost;
-    private Integer limit;
+    private Integer limitCount;
 
     public Activity toPO(){
         Activity activity = new Activity();
@@ -28,7 +28,7 @@ public class ActivityVO {
         activity.setDate(date);
         activity.setDetail(detail);
         activity.setCost(cost);
-        activity.setLimit(limit);
+        activity.setLimitCount(limitCount);
         return activity;
     }
 }

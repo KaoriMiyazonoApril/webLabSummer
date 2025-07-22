@@ -35,8 +35,8 @@ public class Activity {
     @Column(name="cost")
     private Integer cost;
 
-    @Column(name="limit")
-    private Integer limit;//剩下的名额
+    @Column(name="limitCount")
+    private Integer limitCount;//剩下的名额
 
     public ActivityVO toVO(){
         ActivityVO vo = new ActivityVO();
@@ -46,7 +46,7 @@ public class Activity {
         vo.setDate(date);
         vo.setDetail(detail);
         vo.setCost(cost);
-        vo.setLimit(limit);
+        vo.setLimitCount(limitCount);
         return vo;
     }
 }

@@ -7,6 +7,7 @@ import com.example.sports.po.Attendance;
 import com.example.sports.repository.ActivityRepository;
 import com.example.sports.repository.AttendanceRepository;
 import com.example.sports.util.SecurityUtil;
+import com.example.sports.vo.AttendanceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,67 +25,76 @@ public class AttendanceService {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
-    private Boolean isAdmin(){
+    private Boolean ensureUser(Integer userId) {
         Account account = securityUtil.getCurrentUser();
-        if(account.getRole().equals("Admin")){return true;}
+        if(account.getRole().equals("Admin")||account.getId().equals(userId)){return true;}
         throw SportsException.NoAccession();
     }
 
     @Transactional
     public void tryLockStock(Integer activityId) {
-        if(isAdmin()){
-            Activity activity = activityRepository.findById(activityId).get();
-            Date now = new Date();
-            if(now.after(activity.getDate())){
-                throw SportsException.ActivityAlreadyUnaccessible();
-            }
-            int updated = activityRepository.lockStock(activityId);//修改的行数
-            if (updated == 0) {
-                throw SportsException.activityFull();
-            }
-        }
 
+        Activity activity = activityRepository.findById(activityId).get();
+        Date now = new Date();
+        if(now.after(activity.getDate())){
+            throw SportsException.ActivityAlreadyUnaccessible();
+        }
+        int updated = activityRepository.lockStock(activityId);//修改的行数
+        if (updated == 0) {
+            throw SportsException.activityFull();
+        }
     }
 
     @Transactional
     public void releaseLockedStock(Integer activityId) {
-        if(isAdmin()){
             activityRepository.releaseStock(activityId);
+    }
+
+
+    public Boolean processOrder(AttendanceVO attendance1) {
+        Integer activityId=attendance1.getActivity().getId();
+        Integer userId=attendance1.getAccount().getId();
+        if(activityId==null||userId==null){throw SportsException.NoEnoughArguments();}
+
+        Account account = securityUtil.getCurrentUser();
+        if(account==null){
+            throw SportsException.notLogin();
+        }
+        if(ensureUser(userId)){
+            if(attendanceRepository.findByAccount_IdAndActivity_Id(userId, activityId) != null){
+                throw SportsException.ActivityAlreadyJoined();
+            }
+            tryLockStock(activityId);  // 锁定库存
+            Attendance attendance = new Attendance();
+            attendance.setAccount(account);
+            Activity newActivity = new Activity();
+            newActivity.setId(activityId);
+            attendance.setActivity(newActivity);
+            attendance.setOrderDate(new Date());
+            attendanceRepository.save(attendance);
+            return true;
         }
         throw SportsException.NoAccession();
     }
 
+    public Boolean cancelOrder(AttendanceVO attendance1) {
+        Integer activityId=attendance1.getActivity().getId();
+        Integer userId=attendance1.getAccount().getId();
+        if(activityId==null||userId==null){throw SportsException.NoEnoughArguments();}
 
-    public Boolean processOrder(Integer activityId) {
         Account account = securityUtil.getCurrentUser();
         if(account==null){
             throw SportsException.notLogin();
         }
-        if(attendanceRepository.findByAccount_IdAndActivity_Id(account.getId(), activityId) != null){
-            throw SportsException.ActivityAlreadyJoined();
+        if(ensureUser(userId)){
+            if(attendanceRepository.findByAccount_IdAndActivity_Id(userId, activityId) == null){
+                throw SportsException.ActivityNotJoined();
+            }
+            releaseLockedStock(activityId); // 恢复库存
+            Attendance attendance = attendanceRepository.findByAccount_IdAndActivity_Id(account.getId(), activityId);
+            attendanceRepository.delete(attendance);
+            return true;
         }
-        tryLockStock(activityId);  // 锁定库存
-        Attendance attendance = new Attendance();
-        attendance.setAccount(account);
-        Activity newActivity = new Activity();
-        newActivity.setId(activityId);
-        attendance.setActivity(newActivity);
-        attendance.setOrderDate(new Date());
-        attendanceRepository.save(attendance);
-        return true;
-    }
-
-    public Boolean cancelOrder(Integer activityId) {
-        Account account = securityUtil.getCurrentUser();
-        if(account==null){
-            throw SportsException.notLogin();
-        }
-        if(attendanceRepository.findByAccount_IdAndActivity_Id(account.getId(), activityId) == null){
-            throw SportsException.ActivityNotJoined();
-        }
-        releaseLockedStock(activityId); // 恢复库存
-        Attendance attendance = attendanceRepository.findByAccount_IdAndActivity_Id(account.getId(), activityId);
-        attendanceRepository.delete(attendance);
-        return true;
+        throw SportsException.NoAccession();
     }
 }

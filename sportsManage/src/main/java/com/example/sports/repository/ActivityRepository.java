@@ -15,13 +15,13 @@ public interface ActivityRepository extends JpaRepository<Activity,Integer> {
     public List<Activity> findByNameContainingOrDetailContaining(String name, String detail);
 
     @Modifying
-    @Query("UPDATE Activity ac SET ac.limit=ac.limit - 1" +
-            "WHERE ac.id = :activityId AND ac.limit>=1")
+    @Query("UPDATE Activity ac SET ac.limitCount=ac.limitCount - 1" +
+            "WHERE ac.id = :activityId AND ac.limitCount>=1")
     @Transactional
     int lockStock(@Param("activityId") Integer activityId);
 
     @Modifying
-    @Query("UPDATE Activity ac SET ac.limit = ac.limit + 1" +
+    @Query("UPDATE Activity ac SET ac.limitCount = ac.limitCount + 1" +
             "WHERE ac.id=:activityId")
     @Transactional
     void releaseStock(@Param("activityId") Integer activityId);

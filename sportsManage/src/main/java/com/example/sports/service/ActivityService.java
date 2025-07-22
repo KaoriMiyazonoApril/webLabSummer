@@ -35,7 +35,7 @@ public class ActivityService {
 
     public ActivityVO createActivity(ActivityVO a){
         if(isAdmin()){
-            if(a.getName()==null||a.getLimit()==null||a.getDate()==null){
+            if(a.getName()==null||a.getLimitCount()==null||a.getDate()==null){
                 throw SportsException.NoEnoughArguments();
             }
             if(a.getCost()==null){
@@ -65,8 +65,8 @@ public class ActivityService {
             if(a.getDetail()!=null){
                 a1.setDetail(a.getDetail());
             }
-            if(a.getLimit()!=null){
-                a1.setLimit(a.getLimit());
+            if(a.getLimitCount()!=null){
+                a1.setLimitCount(a.getLimitCount());
             }
             if(a.getCost()!=null){
                 a1.setCost(a.getCost());
@@ -89,27 +89,27 @@ public class ActivityService {
         Date today= new Date(System.currentTimeMillis());
 
         for(Activity a:all){
-            if(a.getDate().after(today)&&a.getLimit()>0){
+            if(a.getDate().after(today)&&a.getLimitCount()>0){
                 res.add(a.toVO());
             }
         }
         return res;
     }
     //没过期但满员了
-    public List<ActivityVO> getAllAvailableNotNow(){
+    public List<ActivityVO> getAllFull(){
         List<Activity> all=activityRepository.findAll();
         List<ActivityVO> res=new ArrayList<ActivityVO>();
         Date today= new Date(System.currentTimeMillis());
 
         for(Activity a:all){
-            if(a.getDate().after(today)&&a.getLimit()==0){
+            if(a.getDate().after(today)&&a.getLimitCount()==0){
                 res.add(a.toVO());
             }
         }
         return res;
     }
     //过期的活动
-    public List<ActivityVO> getActivityNotAvailable(){
+    public List<ActivityVO> getAllNotAvailable(){
         List<Activity> all=activityRepository.findAll();
         List<ActivityVO> res=new ArrayList<ActivityVO>();
         Date today= new Date(System.currentTimeMillis());
