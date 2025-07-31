@@ -3,6 +3,10 @@ package com.example.sports.repository;
 import com.example.sports.po.Attendance;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface AttendanceRepository extends JpaRepository<Attendance,Integer> {
     Attendance findByAccount_IdAndActivity_Id(Integer userId, Integer activityId);
+    List<Attendance> findByActivity_Id(Integer activityId);
+    List<Attendance> findByAccount_Id(Integer userId);
 }

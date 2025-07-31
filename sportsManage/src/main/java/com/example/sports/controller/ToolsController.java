@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/images")
 public class ToolsController {
     @Autowired
     ImageService imageService;
 
-    @PostMapping("/images")
+    @PostMapping("")
     public Response<String> upload(@RequestParam MultipartFile file){
         return Response.buildSuccess(imageService.upload(file));
     }

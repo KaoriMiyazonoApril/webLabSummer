@@ -41,7 +41,7 @@ public class AccountService {
         return true;
     }
 
-    public String register(AccountVO accountVO) {
+    public AccountVO register(AccountVO accountVO) {
         if(accountVO.getUsername()== null ||accountVO.getPassword()==null ||accountVO.getTelephone()==null){
             throw SportsException.NoEnoughArguments();
         }
@@ -53,7 +53,7 @@ public class AccountService {
         newUser.setRole("User");
         newUser.setPassword(passwordEncoder.encode(accountVO.getPassword()));
         accountRepository.save(newUser);
-        return "注册成功";
+        return newUser.toVO();
     }
 
     public AccountVO getUserByUserid(Integer userId) {

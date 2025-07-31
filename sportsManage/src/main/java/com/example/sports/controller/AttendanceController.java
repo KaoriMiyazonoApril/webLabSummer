@@ -23,4 +23,16 @@ public class AttendanceController {
     public Response cancel(@RequestBody AttendanceVO attendance1) {
         return Response.buildSuccess(attendanceService.cancelOrder(attendance1));
     }
+
+    //活动的参与者,只能得到用户名和头像
+    @GetMapping("/member/{activityId}")
+    public Response getActivity(@PathVariable("activityId") Integer activityId) {
+        return Response.buildSuccess(attendanceService.getByActivityId(activityId));
+    }
+
+    //获取个人参与的所有活动
+    @GetMapping("personal/{userId}")
+    public Response getPersonal(@PathVariable("userId") Integer userId) {
+        return Response.buildSuccess(attendanceService.getByUserId(userId));
+    }
 }

@@ -4,15 +4,20 @@ import com.example.sports.exception.SportsException;
 import com.example.sports.po.Account;
 import com.example.sports.po.Activity;
 import com.example.sports.po.Attendance;
+import com.example.sports.repository.AccountRepository;
 import com.example.sports.repository.ActivityRepository;
 import com.example.sports.repository.AttendanceRepository;
 import com.example.sports.util.SecurityUtil;
+import com.example.sports.vo.AccountVO;
+import com.example.sports.vo.ActivityVO;
 import com.example.sports.vo.AttendanceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service//确保并发的能够参与活动的服务层
 public class AttendanceService {
@@ -24,6 +29,9 @@ public class AttendanceService {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     private Boolean ensureUser(Integer userId) {
         Account account = securityUtil.getCurrentUser();
@@ -96,5 +104,31 @@ public class AttendanceService {
             return true;
         }
         throw SportsException.NoAccession();
+    }
+
+    public List<ActivityVO> getByUserId(Integer userId){
+        if(ensureUser(userId)){
+            List<ActivityVO> ans=new ArrayList<>();
+            attendanceRepository.findByAccount_Id(userId).forEach(e-> {
+                        ans.add(activityRepository.findById(e.getActivity().getId()).get().toVO());
+                    }
+            );
+            return ans;
+        }
+        throw SportsException.NoAccession();
+    }
+
+    public List<AccountVO> getByActivityId(Integer activityId){
+        List<AccountVO> ans=new ArrayList<>();
+        attendanceRepository.findByActivity_Id(activityId).forEach(e-> {
+            Integer userId = e.getAccount().getId();
+            AccountVO vo = accountRepository.findById(userId).get().toVO();
+            vo.setTelephone(null);
+            vo.setPassword(null);
+            vo.setId(null);
+            vo.setRole(null);
+            ans.add(vo);
+        });
+        return ans;
     }
 }
