@@ -13,6 +13,7 @@ import com.example.sports.vo.ActivityVO;
 import com.example.sports.vo.AttendanceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -85,9 +86,8 @@ public class AttendanceService {
         throw SportsException.NoAccession();
     }
 
-    public Boolean cancelOrder(AttendanceVO attendance1) {
-        Integer activityId=attendance1.getActivity().getId();
-        Integer userId=attendance1.getAccount().getId();
+    public Boolean cancelOrder(Integer userId,Integer activityId) {
+
         if(activityId==null||userId==null){throw SportsException.NoEnoughArguments();}
 
         Account account = securityUtil.getCurrentUser();

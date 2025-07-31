@@ -42,13 +42,13 @@ public class AccountController {
         return Response.buildSuccess(accountService.login(a));
     }
 
-    @DeleteMapping("/deleteUser/{id}")
-    public Response deleteUser(@PathVariable(value = "id") Integer id){
+    @DeleteMapping("/deleteUser/{userId}")
+    public Response deleteUser(@PathVariable(value = "userId") Integer id){
         return Response.buildSuccess(accountService.deleteUser(id));
     }
 
-    @PutMapping("/setAdmin/{id}")
-    public Response setAdmin(@PathVariable(value="id")Integer id){
+    @PutMapping("/setAdmin/{userId}")
+    public Response setAdmin(@PathVariable(value="userId")Integer id){
         return Response.buildSuccess(accountService.setAdmin(id));
     }
 }

@@ -42,16 +42,16 @@ public class CommentService {
         return ret.toVO();
     }
 
-    public boolean deleteComment(CommentVO comment){
+    public boolean deleteComment(Integer userId,Integer activityId) {
         Account currentUser = securityUtil.getCurrentUser();
         if(currentUser == null){
             throw SportsException.notLogin();
         }
-        if(Objects.equals(currentUser.getRole(), "Admin") || Objects.equals(currentUser.getId(), comment.getActivity().getId())){
-            if(comment.getActivity().getId() == null || comment.getAccount().getId() == null){
+        if(Objects.equals(currentUser.getRole(), "Admin") || Objects.equals(currentUser.getId(), userId)){
+            if(userId == null || activityId == null){
                 throw SportsException.NoEnoughArguments();
             }
-            Comment a=commentRepository.findByAccount_IdAndActivity_Id(comment.getAccount().getId(), comment.getActivity().getId());
+            Comment a=commentRepository.findByAccount_IdAndActivity_Id(userId,activityId);
             if(a == null){
                 throw SportsException.CommentNotFound();
             }

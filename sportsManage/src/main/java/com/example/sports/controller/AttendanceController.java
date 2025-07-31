@@ -19,9 +19,9 @@ public class AttendanceController {
         return Response.buildSuccess(attendanceService.processOrder(attendance1));
     }
 
-    @DeleteMapping("/cancel")
-    public Response cancel(@RequestBody AttendanceVO attendance1) {
-        return Response.buildSuccess(attendanceService.cancelOrder(attendance1));
+    @DeleteMapping("/cancel/{userId}/{activityId}")
+    public Response cancel(@PathVariable(name="userId") Integer userId, @PathVariable(name="activityId") Integer activityId) {
+        return Response.buildSuccess(attendanceService.cancelOrder(userId,activityId));
     }
 
     //活动的参与者,只能得到用户名和头像

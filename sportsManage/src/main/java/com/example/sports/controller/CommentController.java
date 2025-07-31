@@ -23,13 +23,13 @@ public class CommentController {
         return Response.buildSuccess(commentService.getCommentsByActivityId(activityId));
     }
 
-    @DeleteMapping("/delete")
-    public Response delete(@RequestBody CommentVO c){
-        return Response.buildSuccess(commentService.deleteComment(c));
+    @DeleteMapping("/delete/{userId}/{activityId}")
+    public Response delete(@PathVariable(name="userId") Integer userId,@PathVariable(name="activityId") Integer activityId){
+        return Response.buildSuccess(commentService.deleteComment(userId,activityId));
     }
 
-    @GetMapping("/avg/{id}")
-    public Response update(@PathVariable(value = "id") Integer id){
+    @GetMapping("/avg/{activityId}")
+    public Response getAvgScore(@PathVariable(value = "activityId") Integer id){
         return Response.buildSuccess(commentService.getAvgScore(id));
     }
 }

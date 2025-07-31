@@ -19,8 +19,8 @@ public class ActivityController {
         return Response.buildSuccess(activityService.createActivity(a));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public Response deleteActivity(@PathVariable(name="id") Integer id){
+    @DeleteMapping("/delete/{activityId}")
+    public Response deleteActivity(@PathVariable(name="activityId") Integer id){
         return  Response.buildSuccess(activityService.deleteActivity(id));
     }
 
@@ -29,8 +29,8 @@ public class ActivityController {
         return Response.buildSuccess(activityService.alterActivity(a));
     }
 
-    @GetMapping("/get/{id}")
-    public Response getActivityById(@PathVariable(name="id") Integer id){
+    @GetMapping("/get/{activityId}")
+    public Response getActivityById(@PathVariable(name="activityId") Integer id){
         return Response.buildSuccess(activityService.getActivityById(id));
     }
 
