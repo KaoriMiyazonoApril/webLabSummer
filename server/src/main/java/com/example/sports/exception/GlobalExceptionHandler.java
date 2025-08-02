@@ -28,4 +28,11 @@ public class GlobalExceptionHandler {
         }
         return Response.buildFailure(e.getMessage(), "400");
     }
+
+    // 处理其他常见的异常
+    @ExceptionHandler(Exception.class)
+    public Response<String> handleGenericException(Exception e) {
+        e.printStackTrace();
+        return Response.buildFailure(e.getMessage(), "400");
+    }
 }

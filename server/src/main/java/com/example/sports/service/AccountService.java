@@ -13,7 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 //()
@@ -28,6 +30,7 @@ public class AccountService {
     @Autowired
     private SecurityUtil securityUtil;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     private Boolean ensureUser(Integer userid){
@@ -65,7 +68,8 @@ public class AccountService {
         return new AccountVO();
     }
 
-    public String login(AccountVO a) {
+
+    public Map<String, Object> login(AccountVO a) {
 
         Long telephone=a.getTelephone();
         String pwd=a.getPassword();
@@ -73,13 +77,16 @@ public class AccountService {
             throw SportsException.NoEnoughArguments();
         Account ac = accountRepository.findByTelephone(telephone);
         if (ac == null) {
-            throw SportsException.WrongUsername();
+            throw SportsException.WrongTelephone();
         }
-
         if (!passwordEncoder.matches(pwd, ac.getPassword())) {
             throw SportsException.WrongPassword();
         }
-        return tk.getToken(ac);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token",tk.getToken(ac));
+        response.put("userId",ac.getId());
+        return response;
     }
 
     public Boolean update(AccountVO a) {

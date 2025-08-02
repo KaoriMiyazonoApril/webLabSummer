@@ -3,8 +3,8 @@ package com.example.sports.exception;
 public class SportsException extends RuntimeException {
     public SportsException(String message){super(message);}
 
-    public static SportsException WrongUsername(){
-        return new SportsException("用户名不存在，请检查后重试");
+    public static SportsException WrongTelephone(){
+        return new SportsException("电话号码不存在，请检查后重试");
     }
 
     public static SportsException WrongPassword(){

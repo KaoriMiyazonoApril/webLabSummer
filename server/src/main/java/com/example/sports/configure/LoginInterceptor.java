@@ -8,6 +8,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Author: DingXiaoyu
@@ -25,11 +27,24 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     TokenUtil tokenUtil;
 
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+            "/api/account/login",        // 登录接口
+            "/api/account/register"    // 注册接口
+    );
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
+
+
+        for (String excludedPath : EXCLUDED_PATHS) {
+            if (request.getRequestURI().matches(excludedPath.replace("**", ".*"))) {
+                return true;
+            }
+        }
+
         String token = request.getHeader("token");
         if (token != null && tokenUtil.verifyToken(token)) {
             request.getSession().setAttribute("currentUser",tokenUtil.getAccount(token));

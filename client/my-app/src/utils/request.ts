@@ -3,6 +3,9 @@ import axios from 'axios'
 //创建一个axios的实例service
 const service = axios.create()
 
+service.defaults.baseURL = ("http://localhost:8080")
+service.defaults.timeout = 30000;
+
 //判断是否登录
 function hasToken() {
     return !(sessionStorage.getItem('token') == '')

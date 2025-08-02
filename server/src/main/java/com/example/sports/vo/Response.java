@@ -12,7 +12,7 @@ public class Response<T> implements Serializable {
 
     private String code;
 
-    private String msg;
+    private String message;
 
     private T data;
 
