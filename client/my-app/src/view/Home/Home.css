@@ -1,0 +1,62 @@
+/* 轮播容器 */
+.banner {
+    margin-top: 50px;
+    position: relative;
+    width: 100%;
+    height: 500px;  /* 根据需要调整高度 */
+    overflow: hidden;  /* 隐藏溢出的部分 */
+}
+
+/* 轮播容器内的图片集 */
+.carousel {
+    transition: transform 0.5s ease-in-out;  /* 设置图片切换的过渡动画 */
+}
+
+/* 每一张图片 */
+.carousel-images {
+    display: flex;
+    align-items: center;  /* 垂直居中 */
+    justify-content: center;  /* 水平居中 */
+}
+
+.carousel-image {
+    object-fit: cover;  /* 图片保持比例，填充区域 */
+    height: 400px;
+}
+
+/* 左右按钮样式 */
+.prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    left: 10px;
+}
+
+.next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    right: 10px;
+}
+
+.prev:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+

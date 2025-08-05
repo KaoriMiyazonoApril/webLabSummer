@@ -38,11 +38,8 @@ public class  CorsFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        String origin = request.getHeader("Origin");
-        if (origin != null) {
-            // 允许跨域请求的来源，可以根据需求动态配置
-            response.setHeader("Access-Control-Allow-Origin", origin);
-        }
+        String allowedOrigin = "http://localhost:5173";
+        response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
 
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, PATCH, OPTIONS");

@@ -1,0 +1,68 @@
+.user-panel {
+    color: white;
+    background-color: purple;
+    display: flex;
+    width: 100%;
+    top: 0;
+    align-items: center; /* 竖直方向居中 */
+    justify-content: space-between; /* 使 .label-container 在左，.circle-container 在右 */
+    padding-right: 50px;
+}
+
+.circle-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.circle-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 保证图片按照比例填充圆形容器 */
+}
+
+.label-container {
+    display: flex;
+    box-sizing: border-box;
+    gap: 80px;  /* 设置内部 .label 元素之间的间距为 80px */
+    font-weight: bold;
+    align-items: center; /* 竖直方向居中 */
+}
+
+.label {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.label:hover {
+    color:blue;
+}
+
+
+.sub-options {
+    z-index: 9999;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    background-color: purple;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    display: flex; /* 横向排列 */
+    flex-direction: column;
+    gap: 15px; /* 元素之间的间隔 */
+}
+
+.sub-option {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+.sub-option:hover {
+    color:blue;
+}

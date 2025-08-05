@@ -27,26 +27,16 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     TokenUtil tokenUtil;
 
-    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-            "/api/account/login",        // 登录接口
-            "/api/account/register"    // 注册接口
-    );
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            System.out.println("OPTIONS");
             return true;
-        }
-
-
-        for (String excludedPath : EXCLUDED_PATHS) {
-            if (request.getRequestURI().matches(excludedPath.replace("**", ".*"))) {
-                return true;
-            }
         }
 
         String token = request.getHeader("token");
         if (token != null && tokenUtil.verifyToken(token)) {
+            System.out.println("TOKEN VERIFIED");
             request.getSession().setAttribute("currentUser",tokenUtil.getAccount(token));
             return true;
         }else {

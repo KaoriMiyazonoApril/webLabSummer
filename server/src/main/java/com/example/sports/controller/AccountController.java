@@ -26,7 +26,7 @@ public class AccountController {
         return Response.buildSuccess(accountService.getUserByUserid(userId));
     }
 
-    @PostMapping()
+    @PostMapping("/register")
     public Response createUser(@Valid @RequestBody AccountVO accountVO) {
         return Response.buildSuccess(accountService.register(accountVO));
     }

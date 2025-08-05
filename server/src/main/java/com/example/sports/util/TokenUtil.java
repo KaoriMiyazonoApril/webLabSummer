@@ -93,6 +93,8 @@ public class TokenUtil {
 
     public Account getAccount(String token){
         Integer userId=Integer.parseInt(JWT.decode(token).getAudience().get(0));
+        System.out.println("userId:"+userId);
+
         return accountRepository.findById(userId).get();
     }
 }

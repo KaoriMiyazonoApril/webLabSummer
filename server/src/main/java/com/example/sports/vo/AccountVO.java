@@ -15,6 +15,7 @@ public class AccountVO {
     private Long telephone;
     private String role;
     private String avatar;
+    private String token;
 
     public Account toPO() {
         Account account = new Account();

@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import {userInfo, userLogin, userRegister} from "../../api/account"
+import {userInfo, userLogin} from "../../api/account"
 import "./Login.css"
 
 
@@ -29,25 +29,42 @@ const Login = () => {
             password: password
         }).then(res => {
             if (res.data.code === '200') {
-                toast.success('登录成功,即将自动跳转！', {
-                    position: "top-center",  // 消息位置
-                    autoClose: 3000,         // 自动关闭的时间
-                    hideProgressBar: false,  // 显示进度条
-                    closeOnClick: true,      // 点击关闭按钮时关闭
-                    pauseOnHover: true,      // 悬停时暂停自动关闭
-                })
 
-                sessionStorage.setItem('token', res.data.data.token);
-                sessionStorage.setItem('userId', res.data.data.userId);
+                sessionStorage.setItem('token', res.data.data.token)
+                sessionStorage.setItem('userId', res.data.data.userId)
+                console.log('token='+sessionStorage.getItem('token'))
+                console.log(('userid='+sessionStorage.getItem('userId')))
 
                 // 获取用户信息
-                userInfo(Number(sessionStorage.getItem('userId'))).then(res => {
-                    sessionStorage.setItem('telephone', res.data.data.telephone);
-                    sessionStorage.setItem('role', res.data.data.role);
-                    sessionStorage.setItem('avatar',res.data.data.avatar)
-                    // 跳转到所有产品页
-                    navigate('/activities')
-                });
+                userInfo(Number(sessionStorage.getItem('userId'))).then(
+                    res => {
+                        if(res.data.code === '200') {
+                            toast.success('登录成功,即将自动跳转！', {
+                                position: "top-center",  // 消息位置
+                                autoClose: 3000,         // 自动关闭的时间
+                                hideProgressBar: false,  // 显示进度条
+                                closeOnClick: true,      // 点击关闭按钮时关闭
+                                pauseOnHover: true,      // 悬停时暂停自动关闭
+                            })
+
+                            sessionStorage.setItem('username',res.data.data.username)
+                            sessionStorage.setItem('telephone', res.data.data.telephone)
+                            sessionStorage.setItem('role', res.data.data.role)
+                            sessionStorage.setItem('avatar',res.data.data.avatar)
+
+                            navigate('/home')
+                        }
+                        else{
+                            toast.error(`没有获取到用户信息:${res.data.message}`, {
+                                position: "top-center",
+                                autoClose: 3000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true
+                            })
+                        }
+
+                })
             } else if (res.data.code !== '200') {
                 toast.error(`登录失败:${res.data.message}`, {
                     position: "top-center",
@@ -62,13 +79,13 @@ const Login = () => {
     };
 
     return (
-        <div className="main-frame bgImage">
+        <div className="main-frame">
             <div className="login-card">
                 <h2>登录</h2>
                 <form>
                     <div className="form-item1">
                         <div>
-                            <label htmlFor="username">
+                            <label htmlFor="telephone" style={{ color: hasTelephoneInput && !TelephoneLegal ? 'red' : 'black' }}>
                                 {!hasTelephoneInput ? '请输入您的电话号码' : !TelephoneLegal ? '电话号需要为11位' : '电话号码'}
                             </label>
                         </div>

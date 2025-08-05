@@ -89,7 +89,7 @@ public class AccountService {
         return response;
     }
 
-    public Boolean update(AccountVO a) {
+    public AccountVO update(AccountVO a) {
         Integer userId=a.getId();
         String username=a.getUsername();
         String password=a.getPassword();
@@ -97,25 +97,32 @@ public class AccountService {
 
         if(ensureUser(userId)){
             Account ac = accountRepository.findById(userId).get();
-            if (avatar != null) {
+            if (avatar != null && !avatar.isEmpty()) {
                 ac.setAvatar(avatar);
             }
-            if (password != null) {
+            if (password != null && !password.isEmpty()) {
                 // 加密新密码
                 ac.setPassword(passwordEncoder.encode(password));
             }
-            if (username != null) {
+            if (username != null && !username.isEmpty()) {
                 ac.setUsername(username);
             }
             accountRepository.save(ac);
-            return true;
+            AccountVO t= ac.toVO();
+            t.setPassword(null);
+            t.setToken(tk.getToken(ac));
+            return t;
         }
-        return false;
+
+        throw SportsException.NoAccession();
     }
 
     public Boolean deleteUser(Integer id){
         if(ensureUser(id)){
             Account a=accountRepository.findById(id).get();
+            if(a.getRole().equals("Admin") && !securityUtil.getCurrentUser().getId().equals(id)){
+                throw SportsException.NoAccession();
+            }
             accountRepository.delete(a);
             return true;
         }
@@ -123,10 +130,11 @@ public class AccountService {
     }
 
     public Boolean setAdmin(Integer id){
-        Account ac = securityUtil.getCurrentUser();
+        Account ac = accountRepository.findById(securityUtil.getCurrentUser().getId()).get();
         if(ac.getRole().equals("Admin")){
             Account a=accountRepository.findById(id).get();
             a.setRole("Admin");
+            accountRepository.save(a);
             return true;
         }
         throw SportsException.NoAccession();

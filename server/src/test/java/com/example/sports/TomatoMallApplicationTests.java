@@ -44,4 +44,18 @@ class TomatoMallApplicationTests {
 
         accountRepository.save(account);
     }
+
+    @Test
+    void CreateAccounts(){
+        Long i=10000000001L;
+        for(Long j=i;j<=i+10;j++){
+            Account account = new Account();
+            account.setUsername("a");
+            account.setPassword(passwordEncoder.encode("123456"));
+            account.setTelephone(j);
+            account.setRole("User");
+            accountRepository.save(account);
+        }
+
+    }
 }

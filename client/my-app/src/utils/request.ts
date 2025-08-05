@@ -16,6 +16,7 @@ service.interceptors.request.use(
     config => {
         if(hasToken()) {
             config.headers['token'] = sessionStorage.getItem('token')
+            console.log('send token='+config.headers['token'])
         }
         return config
     },

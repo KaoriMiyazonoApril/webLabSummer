@@ -3,11 +3,11 @@ import {ACCOUNT_MODULE} from './_prefix'
 import type {AxiosRequestConfig} from "axios";
 type UserInfo = {
     id:number
-    role: string,
-    username: string,
-    avatar: string,
+    role: string |null,
+    username: string |null,
+    avatar: string|null,
     telephone: number,
-    password: string,
+    password: string |null,
 }
 
 type LoginInfo = {
@@ -32,7 +32,7 @@ export const userLogin = (loginInfo: LoginInfo) => {
 
 // 用户注册
 export const userRegister = (registerInfo: UserInfo) => {
-    return axios.post(`${ACCOUNT_MODULE}`, registerInfo, {
+    return axios.post(`${ACCOUNT_MODULE}/register`, registerInfo, {
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res => {
@@ -120,7 +120,7 @@ export const setAdminUser = (userId: number, config?: AxiosRequestConfig) => {
         console.error("UserId is required.");
         return Promise.reject(new Error("UserId cannot be empty"));
     }
-    return axios.delete(`${ACCOUNT_MODULE}/setAdmin/${userId}`, {
+    return axios.put(`${ACCOUNT_MODULE}/setAdmin/${userId}`, {
         ...config,
         headers: {
             'Content-Type': 'application/json',
