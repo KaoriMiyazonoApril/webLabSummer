@@ -35,4 +35,9 @@ public class AttendanceController {
     public Response getPersonal(@PathVariable("userId") Integer userId) {
         return Response.buildSuccess(attendanceService.getByUserId(userId));
     }
+
+    @GetMapping("btnType/{userId}/{activityId}")
+    public Response getBtnType(@PathVariable("userId") Integer userId,@PathVariable("activityId") Integer activityId) {
+        return Response.buildSuccess(attendanceService.getBtnType(userId,activityId));
+    }
 }

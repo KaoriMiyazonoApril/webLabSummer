@@ -3,12 +3,15 @@ package com.example.sports.service;
 import com.example.sports.exception.SportsException;
 import com.example.sports.po.Account;
 import com.example.sports.po.Comment;
+import com.example.sports.repository.AccountRepository;
 import com.example.sports.repository.CommentRepository;
 import com.example.sports.util.SecurityUtil;
+import com.example.sports.vo.AccountVO;
 import com.example.sports.vo.CommentVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -20,6 +23,8 @@ public class CommentService {
     private CommentRepository commentRepository;
     @Autowired
     private SecurityUtil securityUtil;
+    @Autowired
+    private AccountRepository accountRepository;
 
     public CommentVO addComment(CommentVO comment) {
         Account currentUser = securityUtil.getCurrentUser();
@@ -66,8 +71,24 @@ public class CommentService {
 
     public List<CommentVO> getCommentsByActivityId(Integer activityId){
 
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
         List<Comment> comments=commentRepository.findByActivity_Id(activityId);
-        List<CommentVO> ret=comments.stream().map(Comment::toVO).collect(Collectors.toList());
+        List<CommentVO> ret=new ArrayList<>();
+
+        for (Comment comment : comments) {
+            CommentVO a = comment.toVO();
+            Account account = accountRepository.findById(comment.getAccount().getId()).get();
+            AccountVO accountVO = account.toVO();
+            accountVO.setTelephone(null);
+            accountVO.setPassword(null);
+            accountVO.setRole(null);
+            a.setAccount(accountVO);
+            ret.add(a);
+        }
 
         for(int i=0;i<ret.size();i++){
             if(ret.get(i).getAccount().getId().equals(securityUtil.getCurrentUser().getId())){
@@ -76,10 +97,16 @@ public class CommentService {
                 break;
             }
         }
+
         return ret;
     }
 
     public Double getAvgScore(Integer activityId){
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
         List<Comment> comments=commentRepository.findByActivity_Id(activityId);
         double sum=0;
         double num=0;

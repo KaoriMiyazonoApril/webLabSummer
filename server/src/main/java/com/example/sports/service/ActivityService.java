@@ -3,6 +3,7 @@ package com.example.sports.service;
 import com.example.sports.exception.SportsException;
 import com.example.sports.po.Account;
 import com.example.sports.po.Activity;
+import com.example.sports.repository.AccountRepository;
 import com.example.sports.repository.ActivityRepository;
 import com.example.sports.util.SecurityUtil;
 import com.example.sports.vo.AccountVO;
@@ -14,6 +15,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ActivityService {
@@ -21,13 +23,15 @@ public class ActivityService {
     private ActivityRepository activityRepository;
     @Autowired
     private SecurityUtil securityUtil;
+    @Autowired
+    private AccountRepository accountRepository;
 
     private Boolean isAdmin(){
         Account currentUser=securityUtil.getCurrentUser();
         if(currentUser==null){
             throw SportsException.notLogin();
         }
-        if(currentUser.getRole()!="Admin"){
+        if(!Objects.equals(accountRepository.findById(currentUser.getId()).get().getRole(), "Admin")){
             throw SportsException.NoAccession();
         }
         return true;
@@ -80,10 +84,37 @@ public class ActivityService {
     }
 
     public ActivityVO getActivityById(Integer Id){
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
         return activityRepository.findById(Id).get().toVO();
     }
+    //所有活动
+    public List<ActivityVO> getAll(){
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
+        List<Activity> all=activityRepository.findAll();
+        List<ActivityVO> res=new ArrayList<ActivityVO>();
+        Date today= new Date(System.currentTimeMillis());
+
+        for(Activity a:all){
+            res.add(a.toVO());
+        }
+        return res;
+    }
     //没过期且没有满员的活动
+
     public List<ActivityVO> getAllAvailable(){
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
         List<Activity> all=activityRepository.findAll();
         List<ActivityVO> res=new ArrayList<ActivityVO>();
         Date today= new Date(System.currentTimeMillis());
@@ -97,6 +128,11 @@ public class ActivityService {
     }
     //没过期但满员了
     public List<ActivityVO> getAllFull(){
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
         List<Activity> all=activityRepository.findAll();
         List<ActivityVO> res=new ArrayList<ActivityVO>();
         Date today= new Date(System.currentTimeMillis());
@@ -110,6 +146,11 @@ public class ActivityService {
     }
     //过期的活动
     public List<ActivityVO> getAllNotAvailable(){
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
         List<Activity> all=activityRepository.findAll();
         List<ActivityVO> res=new ArrayList<ActivityVO>();
         Date today= new Date(System.currentTimeMillis());

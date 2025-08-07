@@ -10,6 +10,10 @@ import Register from "./view/Register/Register.tsx"
 import Home from "./view/Home/Home.js";
 import Users from "./view/Users/Users.js";
 import UserProfile from "./view/UpdateUser/UserProfile.tsx";
+import CreateActivity from "./view/ActivityCreation/createActivity.js";
+import StarRatingForm from "./view/Comment/Comment.js";
+import ActivityListPage from "./view/Activities/Activities.js";
+import ActivityDetailPage from "./view/Activity/Activity.js";
 
 function NotFound() {return <h2>404 Page Not Found</h2>;}
 function Activities() {return <h2>404 Page Not Found</h2>;}
@@ -26,9 +30,12 @@ function App() {
                     <Route path='/home' element={<Home />} />
                     <Route path='/userProfile' element={<UserProfile />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/activities" element={<Activities />} />
+                    <Route path="/activities" element={<ActivityListPage/>} />
+                    <Route path="/activity" element={<ActivityDetailPage/>} />
+                    <Route path="/createActivity" element={<CreateActivity />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/users" element={<Users />} />
+                    <Route path="/comment" element={<StarRatingForm />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </Router>

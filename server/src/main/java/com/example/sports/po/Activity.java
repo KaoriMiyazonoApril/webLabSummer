@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Table(name = "activity")
 @Getter
@@ -19,6 +20,12 @@ public class Activity {
     @Id
     @Column(name = "id")
     private Integer id;
+
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> attendance;
 
     @Column(name = "name")
     private String name;

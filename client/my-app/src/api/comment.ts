@@ -54,7 +54,7 @@ export const getAvgScoreById=(activityId:number)=>{
         return Promise.reject(new Error("ActivityId cannot be empty"));
     }
 
-    return axios.get(`${COMMENT_MODULE}/${activityId}`, {
+    return axios.get(`${COMMENT_MODULE}/avg/${activityId}`, {
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res  => {
@@ -71,7 +71,7 @@ export const getCommentById=(activityId:number)=>{
         console.error("ActivityId is required.");
         return Promise.reject(new Error("ActivityId cannot be empty"));
     }
-    return axios.get(`${COMMENT_MODULE}/avg/${activityId}`, {
+    return axios.get(`${COMMENT_MODULE}/${activityId}`, {
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res  => {

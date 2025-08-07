@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "account")
 @Getter
@@ -18,6 +19,12 @@ public class Account {
     @Id
     @Column(name = "id")
     private Integer id;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> attendance;
 
     @Column(name = "username")
     private String username;

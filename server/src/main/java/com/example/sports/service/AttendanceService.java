@@ -56,7 +56,12 @@ public class AttendanceService {
 
     @Transactional
     public void releaseLockedStock(Integer activityId) {
-            activityRepository.releaseStock(activityId);
+        Activity activity = activityRepository.findById(activityId).get();
+        Date now = new Date();
+        if(now.after(activity.getDate())){
+            throw SportsException.ActivityAlreadyUnaccessible();
+        }
+        activityRepository.releaseStock(activityId);
     }
 
 
@@ -69,6 +74,7 @@ public class AttendanceService {
         if(account==null){
             throw SportsException.notLogin();
         }
+
         if(ensureUser(userId)){
             if(attendanceRepository.findByAccount_IdAndActivity_Id(userId, activityId) != null){
                 throw SportsException.ActivityAlreadyJoined();
@@ -119,6 +125,11 @@ public class AttendanceService {
     }
 
     public List<AccountVO> getByActivityId(Integer activityId){
+        Account currentUser=securityUtil.getCurrentUser();
+        if(currentUser==null){
+            throw SportsException.notLogin();
+        }
+
         List<AccountVO> ans=new ArrayList<>();
         attendanceRepository.findByActivity_Id(activityId).forEach(e-> {
             Integer userId = e.getAccount().getId();
@@ -130,5 +141,13 @@ public class AttendanceService {
             ans.add(vo);
         });
         return ans;
+    }
+
+    public Boolean getBtnType(Integer userId,Integer activityId){
+        if(securityUtil.getCurrentUser()==null){throw SportsException.notLogin();}
+        if(activityId==null||userId==null){throw SportsException.NoEnoughArguments();}
+
+        Attendance a=attendanceRepository.findByAccount_IdAndActivity_Id(userId, activityId);
+        return a != null;
     }
 }

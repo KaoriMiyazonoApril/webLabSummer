@@ -48,4 +48,9 @@ public class ActivityController {
     public Response getActivityNotAvailable(){
         return Response.buildSuccess(activityService.getAllNotAvailable());
     }
+
+    @GetMapping("/all")
+    public Response getActivityAll(){
+        return Response.buildSuccess(activityService.getAll());
+    }
 }

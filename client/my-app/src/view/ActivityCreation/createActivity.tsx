@@ -2,12 +2,13 @@ import React, {useState, useEffect, useRef} from 'react';
 import {toast, ToastOptions} from 'react-toastify';
 import { Uploader } from 'rsuite';
 import {FileType} from "rsuite/Uploader";
-import {Upload, Button, Image, Space, Typography, Modal, UploadProps, UploadFile} from 'antd';
+import {Upload, Button, Image, Space, Typography, Modal, UploadProps, UploadFile, DatePicker} from 'antd';
 import { InboxOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from "axios";
 import {uploadImage} from "../../api/image";
 import {userInfoUpdate, userRegister} from "../../api/account";
 import UserPanel from "../Tool/UserPanel";
+import {createActivity} from "../../api/activity";
 
 
 const CreateActivity = () => {
@@ -22,10 +23,12 @@ const CreateActivity = () => {
         avatar: ''
     });
 
-    const [username, setUserName] = useState('');
-    const [password, setPassword] = useState('');
-    const [rePassword, setRePassword] = useState('');
-    const [updateDisabled, setUpdateDisabled] = useState(true);
+    const [activityName, setActivityName] = useState('')
+    const [detail, setDetail] = useState('')
+    const [singleDate, setSingleDate] = useState<Date>()
+    const [cost, setCost] = useState('')
+    const [limitCount, setLimitCount] = useState('')
+    const [updateDisabled, setUpdateDisabled] = useState(true)
 
     // 修复 fileList 类型
     const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -33,18 +36,18 @@ const CreateActivity = () => {
     // 添加缺失的预览状态
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-
     const uploader = React.useRef(null);
 
-    const hasUserNameInput=username.trim()!==''
-    const hasPassWordInput=password.trim()!=''
-    const PassWordLegal=password.trim()===rePassword.trim()
-    const hasPic=fileList.length>0
+    const hasActivityNameInput=activityName.trim() !== ''
+    const LimitLegal=limitCount.trim() !== ''  &&/^[0-9]+$/.test(limitCount)
+    const CostLegal=cost.trim() === ''  || /^[0-9]+$/.test(cost)
+    const hasDateInput= singleDate instanceof Date && !isNaN(singleDate.getTime())
 
     // 修复 useEffect 逻辑：当密码不匹配时应该禁用按钮
     useEffect(() => {
-        setUpdateDisabled(!(PassWordLegal&&(hasUserNameInput||hasPassWordInput||hasPic)))
-    }, [hasUserNameInput,hasPassWordInput,PassWordLegal,hasPic]);
+        setUpdateDisabled(!(hasActivityNameInput && LimitLegal && CostLegal && hasDateInput))
+    }, [hasActivityNameInput,LimitLegal,CostLegal,hasDateInput]);
+
 
     const toastConfig: ToastOptions = {
         position: 'top-center',
@@ -86,26 +89,20 @@ const CreateActivity = () => {
         });
 
 
-
-    // 添加缺失的 getUserInfoFromStorage 函数
-    const getUserInfoFromStorage = () => {
-        try {
-            const storedUserInfo = sessionStorage.getItem('userInfo');
-            if (storedUserInfo) {
-                const parsedUserInfo = JSON.parse(storedUserInfo);
-                setUserInfo(parsedUserInfo);
-            }
-        } catch (error) {
-            console.error('获取用户信息失败:', error);
+    const handleSingleDateChange = (date:any) => {
+        if (date) {
+            const jsDate = date.toDate();
+            setSingleDate(jsDate);
         }
-    };
+    }
+
 
 
     // 完善提交修改函数
     const handleSubmit = async () => {
         try {
             const formData = new FormData()
-            const updateInfo={id:Number(sessionStorage.getItem('userId')),role: '', username: '', avatar: '', telephone: 0, password:''}
+            const updateInfo={id:0,name:activityName,detail:detail,image:'',date:singleDate,cost:Number(cost)||0,limitCount:Number(limitCount)}
             // 添加头像文件（如果有选择）
             if (fileList.length === 1) {
                 // 将文件添加到 formData 中
@@ -114,7 +111,7 @@ const CreateActivity = () => {
                     formData.append('file', file);
                     const res=await uploadImage(formData)
                     if(res.data.code==='200'){
-                        updateInfo.avatar=res.data.data
+                        updateInfo.image=res.data.data
                         toast.success('上传图片成功',toastConfig)
                     }
                     else{
@@ -122,29 +119,24 @@ const CreateActivity = () => {
                     }
                 }
             }
-            if(username && username.trim() !== ''){
-                updateInfo.username=username
-            }
-            if(password && password.trim()!==''){
-                updateInfo.password=password
-            }
 
-            userInfoUpdate(updateInfo).then(res=>{
+            createActivity(updateInfo).then(res=>{
                 if(res.data.code === '200'){
-                    toast.success('修改成功',toastConfig)
-                    sessionStorage.setItem('token',res.data.data.token)
-                    sessionStorage.setItem('avatar',res.data.data.avatar)
-                    sessionStorage.setItem('username',res.data.data.username)
+                    toast.success('创建活动成功',toastConfig)
+
+                    // 清空表单
+                    setActivityName('')
+                    setDetail('')
+                    setSingleDate(undefined)
+                    setCost('')
+                    setLimitCount('')
+                    setFileList([]);
                 }
                 else{
-                    toast.error(`上传信息失败:${res.data.message}`,toastConfig)
+                    toast.error(`创建失败:${res.data.message}`,toastConfig)
                 }
             })
-            // 清空表单
-            setUserName('');
-            setPassword('');
-            setRePassword('');
-            setFileList([]);
+
 
         } catch (error) {
             toast.error('更新失败，请稍后重试',toastConfig);
@@ -157,11 +149,6 @@ const CreateActivity = () => {
         const target = e.target as HTMLImageElement;
         target.src = DEFAULT_AVATAR;
     };
-
-    // 组件挂载时从sessionStorage获取用户信息
-    useEffect(() => {
-        getUserInfoFromStorage();
-    }, []);
 
     return (
         <div>
@@ -181,7 +168,7 @@ const CreateActivity = () => {
                         fontSize: '24px',
                         fontWeight: 'bold'
                     }}>
-                        修改个人信息
+                        活动信息
                     </h2>
 
                     <div>
@@ -193,12 +180,12 @@ const CreateActivity = () => {
                         }}>
                             {/* 用户名输入 */}
                             <div>
-                                <label style={labelStyle}>新用户名</label>
+                                <label style={labelStyle}>活动名(必须)</label>
                                 <input
                                     type="text"
-                                    name="username"
-                                    value={username}
-                                    onChange={(e) => setUserName(e.target.value)}
+                                    name="activityname"
+                                    value={activityName}
+                                    onChange={(e) => setActivityName(e.target.value)}
                                     style={{
                                         width: '200px',
                                         height: '20px',
@@ -207,60 +194,33 @@ const CreateActivity = () => {
                                         borderRadius: '5px',
                                         border: '1px solid #ccc',
                                     }}
-                                    placeholder="请输入新的用户名"
+                                    placeholder="请输入活动名(必须)"
                                 />
                             </div>
 
-                            {/* 密码输入 */}
+
                             <div>
-                                <label style={labelStyle}>新密码</label>
+                                <label style={labelStyle}>活动详情</label>
                                 <input
-                                    type="password"
-                                    name="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    type="text"
+                                    name="detail"
+                                    value={detail}
+                                    onChange={(e) => setDetail(e.target.value)}
                                     style={{
-                                        width: '200px',
-                                        height: '20px',
+                                        width: '500px',
+                                        height: '60px',
                                         padding: '4px',
                                         fontSize: '16px',
                                         borderRadius: '5px',
                                         border: '1px solid #ccc',
                                     }}
-                                    placeholder="留空则不修改密码"
+                                    placeholder="活动详情"
                                 />
                             </div>
-
-                            {/* 确认密码 */}
-                            {password && (
-                                <div>
-                                    <label style={labelStyle}>确认新的密码</label>
-                                    <input
-                                        type="password"
-                                        name="rePassword"
-                                        value={rePassword}
-                                        onChange={(e) => setRePassword(e.target.value)}
-                                        style={{
-                                            width: '200px',
-                                            height: '20px',
-                                            padding: '4px',
-                                            fontSize: '16px',
-                                            borderRadius: '5px',
-                                            border: password !== rePassword ? '1px solid #ff4d4f' : '1px solid #ccc',
-                                        }}
-                                        placeholder="请再次输入密码"
-                                    />
-                                    {password !== rePassword && rePassword && (
-                                        <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-                                            密码不一致
-                                        </div>
-                                    )}
-                                </div>
-                            )}
 
                             {/* 头像上传 */}
                             <div>
-                                <label style={labelStyle}>更换头像</label>
+                                <label style={labelStyle}>活动图片上传</label>
                                 <Upload
                                     fileList={fileList}
                                     customRequest={customRequest}
@@ -282,6 +242,55 @@ const CreateActivity = () => {
                                     </div>
                                 )}
                             </div>
+
+                            <div>
+                                <label style={labelStyle}>活动报名截止时间(必须)</label>
+                                <DatePicker
+                                    showTime
+                                    placeholder="请选择日期时间"
+                                    onChange={handleSingleDateChange}
+                                    style={{ width: '100%', marginTop: 8 }}
+                                />
+                            </div>
+
+                            <div>
+                                <label style={labelStyle}>价格(不填默认为0)</label>
+                                <input
+                                    type="text"
+                                    name="cost"
+                                    value={cost}
+                                    onChange={(e) => setCost(e.target.value)}
+                                    style={{
+                                        width: '200px',
+                                        height: '20px',
+                                        padding: '4px',
+                                        fontSize: '16px',
+                                        borderRadius: '5px',
+                                        border: '1px solid #ccc',
+                                    }}
+                                    placeholder="请输入价格"
+                                />
+                            </div>
+
+                            <div>
+                                <label style={labelStyle}>名额(必须)</label>
+                                <input
+                                    type="text"
+                                    name="limitCount"
+                                    value={limitCount}
+                                    onChange={(e) => setLimitCount(e.target.value)}
+                                    style={{
+                                        width: '200px',
+                                        height: '20px',
+                                        padding: '4px',
+                                        fontSize: '16px',
+                                        borderRadius: '5px',
+                                        border: '1px solid #ccc',
+                                    }}
+                                    placeholder="请输入名额限制(必须)"
+                                />
+                            </div>
+
 
                             {/* 提交按钮 */}
                             <button

@@ -7,7 +7,7 @@ type ActivityInfo = {
     name: string,
     detail:string,
     image: string,
-    date:Date,
+    date:Date |undefined,
     cost: number,
     limitCount: number
 }
@@ -109,6 +109,19 @@ export const getActivityNotAvailable=()=>{
         })
         .catch(err => {
             console.error(`Failed to get activity expired:`, err);
+            throw err;
+        });
+}
+
+export const getActivityAll=()=>{
+    return axios.get(`${ACTIVITY_MODULE}/all`,{
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(res  => {
+            return res;
+        })
+        .catch(err => {
+            console.error(`Failed to get all activities :`, err);
             throw err;
         });
 }

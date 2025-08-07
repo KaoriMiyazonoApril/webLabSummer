@@ -38,7 +38,7 @@ public class AccountService {
         if (currentUser == null) {
             throw SportsException.notLogin();
         }
-        if(!currentUser.getRole().equals("Admin")&&!currentUser.getId().equals(userid)){
+        if(!accountRepository.findById(currentUser.getId()).get().getRole().equals("Admin")&&!currentUser.getId().equals(userid)){
             throw SportsException.NoAccession();
         }
         return true;

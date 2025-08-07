@@ -1,17 +1,16 @@
 import {axios} from '../utils/request'
 import {ATTENDANCE_MODULE} from './_prefix'
-import type {AxiosRequestConfig} from "axios";
-type AttendanceInfo = {
-    id: number,
-    userId:number,
-    activityId:number
-}
 
-export const attendActivity=(attendanceInfo:AttendanceInfo)=>{
+export const attendActivity=(userId:number,activityId:number)=>{
+    if (!activityId || !userId) {
+        console.error("Both two ids are required.");
+        return Promise.reject(new Error("ActivityId or accountId cannot be empty"));
+    }
+
     const requestPayload = {
-        id: attendanceInfo.id,
-        account: { id: attendanceInfo.userId },  // 使用 userId 填充 AccountVO
-        activity: { id: attendanceInfo.activityId },  // 使用 activityId 填充 ActivityVO
+        id: 0,
+        account: { id: userId },  // 使用 userId 填充 AccountVO
+        activity: { id: activityId },  // 使用 activityId 填充 ActivityVO
         orderDate: new Date()  // 设置当前日期作为订单日期
     };
 
@@ -22,25 +21,25 @@ export const attendActivity=(attendanceInfo:AttendanceInfo)=>{
             return res;
         })
         .catch(err => {
-            console.error(`User ${attendanceInfo.userId} Failed to attend activity ${attendanceInfo.activityId}:`, err);
+            console.error(`User ${userId} Failed to attend activity ${activityId}:`, err);
             throw err;
         });
 }
 
-export const cancelActivity=(accountId:number,activityId:number)=>{
-    if (!activityId || !accountId) {
+export const cancelActivity=(userId:number,activityId:number)=>{
+    if (!activityId || !userId) {
         console.error("Both two ids are required.");
         return Promise.reject(new Error("ActivityId or accountId cannot be empty"));
     }
 
-    return axios.delete(`${ATTENDANCE_MODULE}/cancel/${accountId}/${activityId}`, {
+    return axios.delete(`${ATTENDANCE_MODULE}/cancel/${userId}/${activityId}`, {
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res  => {
             return res;
         })
         .catch(err => {
-            console.error(`User ${accountId} Failed to cancel activity ${activityId}:`, err);
+            console.error(`User ${userId} Failed to cancel activity ${activityId}:`, err);
             throw err;
         });
 }
@@ -65,20 +64,42 @@ export const getMember=(activityId:number)=>{
 }
 
 //个人参加的活动
-export const getYourActivity=(accountId:number)=>{
-    if (!accountId) {
+export const getYourActivity=(userId:number)=>{
+    if (!userId) {
         console.error("AccountId is required.");
         return Promise.reject(new Error("AccountId cannot be empty"));
     }
 
-    return axios.get(`${ATTENDANCE_MODULE}/personal/${accountId}`, {
+    return axios.get(`${ATTENDANCE_MODULE}/personal/${userId}`, {
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res  => {
             return res;
         })
         .catch(err => {
-            console.error(`Failed to get activities of User ${accountId}:`, err);
+            console.error(`Failed to get activities of User ${userId}:`, err);
+            throw err;
+        });
+}
+
+export const getBtnType=(userId:number,activityId:number)=>{
+    if (!userId) {
+        console.error("AccountId is required.");
+        return Promise.reject(new Error("AccountId cannot be empty"));
+    }
+    if(!activityId){
+        console.error("ActivityId is required.");
+        return Promise.reject(new Error("ActivityId cannot be empty"));
+    }
+
+    return axios.get(`${ATTENDANCE_MODULE}/btnType/${userId}/${activityId}`, {
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(res  => {
+            return res;
+        })
+        .catch(err => {
+            console.error(`Failed to get button type`, err);
             throw err;
         });
 }

@@ -87,18 +87,7 @@ const UserProfile = () => {
 
 
 
-    // 添加缺失的 getUserInfoFromStorage 函数
-    const getUserInfoFromStorage = () => {
-        try {
-            const storedUserInfo = sessionStorage.getItem('userInfo');
-            if (storedUserInfo) {
-                const parsedUserInfo = JSON.parse(storedUserInfo);
-                setUserInfo(parsedUserInfo);
-            }
-        } catch (error) {
-            console.error('获取用户信息失败:', error);
-        }
-    };
+
 
 
     // 完善提交修改函数
@@ -158,10 +147,6 @@ const UserProfile = () => {
         target.src = DEFAULT_AVATAR;
     };
 
-    // 组件挂载时从sessionStorage获取用户信息
-    useEffect(() => {
-        getUserInfoFromStorage();
-    }, []);
 
     return (
 
