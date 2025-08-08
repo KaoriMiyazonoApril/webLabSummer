@@ -24,7 +24,7 @@ public class Account {
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> attendance;
+    private List<Attendance> attendance;
 
     @Column(name = "username")
     private String username;
